@@ -13,12 +13,20 @@ var io = socketIo(server);
 
 io.on('connection', (socket) => {
     console.log('New user connected.');
+
+    //creating a custom event with data
+    socket.emit('newMessage', {
+        from: 'dilip',
+        text: "My message",
+        createdAt: 1234
+    });
     socket.on('disconnect', () => {
         console.log('Client disconnected.');
     });
+    socket.on('createMessage', (message) => {
+        console.log(message);
+    });
 });
-
-
 
 
 //middleware registration to server html
