@@ -1,38 +1,33 @@
 const path = require('path');
-const express = require('express');
 const http = require('http');
-const socketIo = require('socket.io');
+const express = require('express');
+const socketIO = require('socket.io');
 
+const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
-const publicPath = path.join(__dirname, './../public');
-
-const app = express();
-
+var app = express();
 var server = http.createServer(app);
-var io = socketIo(server);
+var io = socketIO(server);
 
-io.on('connection', (socket) => {
-    console.log('New user connected.');
-
-    //creating a custom event with data
-    socket.emit('newMessage', {
-        from: 'dilip',
-        text: "My message",
-        createdAt: 1234
-    });
-    socket.on('disconnect', () => {
-        console.log('Client disconnected.');
-    });
-    socket.on('createMessage', (message) => {
-        console.log(message);
-    });
-});
-
-
-//middleware registration to server html
 app.use(express.static(publicPath));
 
-//listening at port 3000
+io.on('connection', (socket) => {
+  console.log('New user connected');
+
+  socket.on('createMessage', (message) => {
+    console.log('createMessage', message);
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User was disconnected');
+  });
+});
+
 server.listen(port, () => {
-    console.log(`App started at ${port}`)
+  console.log(`Server is up on ${port}`);
 });
