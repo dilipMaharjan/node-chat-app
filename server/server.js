@@ -18,10 +18,10 @@ io.on('connection', (socket) => {
   socket.emit('newMessage', generateMessage('Admin', 'Welcome New User.'));
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User joined.'));
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('createMessage', message);
-
-    socket.broadcast.emit('newMessage', generateMessage(message.from, message.text));
+    io.emit('newMessage', generateMessage(message.from, message.text));
+    callback("This is from server.");
   });
   socket.on('disconnect', () => {
     console.log('User was disconnected');
