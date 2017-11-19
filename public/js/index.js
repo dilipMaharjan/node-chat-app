@@ -11,14 +11,14 @@ socket.on('disconnect', function () {
 socket.on('newMessage', function (message) {
   console.log('newMessage', message);
   var li = $('<li></li>')
-  li.text(`${message.from} : ${message.text}`);
+  li.text(`${moment(message.createdAt).format('h:mm a')} : ${message.from} -> ${message.text} `);
   $('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function (message) {
   var li = $('<li></li>');
   var a = $('<a target="_blank">My current location.</a>');
-  li.text(`${message.from}:`);
+  li.text(`${moment(message.createdAt).format('h:mm a')} : ${message.from}:`);
   a.attr('href', message.url);
   li.append(a);
   $('#messages').append(li);
@@ -52,5 +52,4 @@ $('#send-location').on('click', () => {
 
     alert("Location couldn't be sent.")
   });
-
 });

@@ -15,10 +15,9 @@ describe('generateLocationMessage', () => {
         var from = 'Bev';
         var latitude = 15;
         var longitude = 19;
-        var createdAt = new Date().getTime();
         var url = `https://google.com/maps?q=${latitude},${longitude}`;
         var message = generateLocationMessage(from, latitude, longitude);
-
-        expect(message).toMatchObject({ createdAt, from, url });
+        expect(typeof message.createdAt).toBe('number');
+        expect(message).toMatchObject({from, url });
     });
 });
