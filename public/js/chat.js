@@ -1,7 +1,18 @@
 var socket = io();
 
-function scrollToBottom() {
+socket.on('connect', function () {
+  var params = $.deparam(window.location.search);
+  socket.emit('join', params, function (err) {
+    if (err) {
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('No error');
+    }
+  });
+});
 
+function scrollToBottom() {
   //selectors
   var messages = $('#messages');
   var newMessage = messages.children('li:last-child');
@@ -16,16 +27,7 @@ function scrollToBottom() {
   if (clientHeight + scrollTop + newMessageHeight + lastMessageHeihgt >= scrollHeight) {
     messages.scrollTop(scrollHeight);
   }
-
 }
-
-socket.on('connect', function () {
-  console.log('Connected to server');
-});
-
-socket.on('disconnect', function () {
-  console.log('Disconnected from server');
-});
 
 socket.on('newMessage', function (message) {
   var template = $('#message-template').html();
@@ -39,7 +41,6 @@ socket.on('newMessage', function (message) {
 });
 
 socket.on('newLocationMessage', function (message) {
-
   var template = $('#location-message-template').html();
   var html = Mustache.render(template, {
     from: message.from,
@@ -49,6 +50,7 @@ socket.on('newLocationMessage', function (message) {
   $('#messages').append(html);
   scrollToBottom();
 });
+
 $('#message-form').on('submit', (e) => {
   e.preventDefault();
   var messageText = $('[name=message]');
@@ -78,4 +80,16 @@ $('#send-location').on('click', () => {
 
     alert("Location couldn't be sent.")
   });
+});
+
+socket.on('disconnect', function () {
+  console.log('Disconnected from server');
+});
+
+socket.on('updateUserList', function (users) {
+  var ul = $('<ul></ul>');
+  users.forEach(function (user) {
+    ul.append($('<li></li>').text(user));
+  });
+  $('#users').html(ul);
 });
